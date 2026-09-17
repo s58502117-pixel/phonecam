@@ -11,18 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip python3-venv \
-            autoconf libtool pkg-config zlib1g-dev libncurses-dev cmake \
-            libffi-dev libssl-dev
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            openjdk-17-jdk git zip unzip autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev \
+            libssl-dev libltdl-dev wget
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer Cython==0.29.37 virtualenv
 
-      - name: Install buildozer
-        run: |
-          python3 -m pip install --user --upgrade buildozer cython
-
-      - name: Build APK
+      - name: Build APK with Buildozer
+        env:
+          VERSION_python3: "3.11.9"
+          VERSION_hostpython3: "3.11.9"
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           yes | buildozer -v android debug
