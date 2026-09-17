@@ -27,6 +27,9 @@ jobs:
           pip install buildozer Cython==0.29.37 virtualenv
 
       - name: Build APK with Buildozer
+        env:
+          VERSION_python3: "3.11.9"
+          VERSION_hostpython3: "3.11.9"
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           yes | buildozer -v android debug
