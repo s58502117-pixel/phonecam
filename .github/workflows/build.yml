@@ -1,0 +1,38 @@
+name: Build PhoneCam APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            openjdk-17-jdk git zip unzip autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev \
+            libssl-dev libltdl-dev wget
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer Cython==0.29.37 virtualenv
+
+      - name: Build APK with Buildozer
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          yes | buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PhoneCam-APK
+          path: bin/*.apk
